@@ -3,6 +3,12 @@ import numpy as np
 import requests
 import aiohttp
 
+class ExceptionAPI(Exception):
+    def __init__(self, err_body, *args, **kwargs):
+        self.err_body = err_body
+        super().__init__(*args, **kwargs)
+
+
 month_to_season = {12: "winter", 1: "winter", 2: "winter",
                    3: "spring", 4: "spring", 5: "spring",
                    6: "summer", 7: "summer", 8: "summer",
@@ -43,6 +49,8 @@ async def fetch_async(url):
 
 def fetch_sync(url):
     response = requests.get(url)
+    if response.status_code != 200:
+        raise ExceptionAPI(err_body=response.text)
     return response.json()
 
 
